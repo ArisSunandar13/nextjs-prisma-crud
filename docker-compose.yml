@@ -1,0 +1,32 @@
+services:
+    nextjs:
+        image: node:lts-alpine
+        container_name: nextjs
+        working_dir: /app
+        volumes:
+            - .:/app
+        ports:
+            - 3000:3000
+        command: sh -c "npm install && npm run dev"
+
+    nextjs-mysql:
+        image: mysql
+        container_name: nextjs-mysql
+        volumes:
+            - nextjs-mysql-volume:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=db_next_api
+
+    nextjs-phpmyadmin:
+        image: phpmyadmin
+        container_name: nextjs-phpmyadmin
+        environment:
+            - PMA_HOST=nextjs-mysql
+        ports:
+            - 8080:80
+        depends_on:
+            - nextjs-mysql
+
+volumes:
+    nextjs-mysql-volume:
